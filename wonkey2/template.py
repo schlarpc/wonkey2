@@ -1,15 +1,3 @@
-"""
-Rough pricing:
-
-CloudFront per request          $0.000001
-Lambda@Edge per request         $0.00000120
-Lambda@Edge runtime per request $0.0000000375075
-S3 per request (GET)            $0.000004
-
-CloudFront per GB egress        $0.085
-"""
-
-
 import datetime
 import hashlib
 import inspect

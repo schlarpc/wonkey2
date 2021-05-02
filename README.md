@@ -25,7 +25,7 @@ Personal file server hosted on AWS, specifically designed to interoperate with S
 Some rough numbers based on current AWS pricing:
 
 * CloudFront requests - $0.000001 / request
-* CloudFront bandwidth - $0.085 / GiB / month
+* CloudFront bandwidth - $0.085 / GiB
 * Lambda@Edge requests - $0.00000120 / request
 * Lambda@Edge runtime - $0.0000000375075 / request
 * S3 GET requests - $0.000004 / request
