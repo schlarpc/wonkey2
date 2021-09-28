@@ -4,7 +4,7 @@ import inspect
 import json
 
 import packmodule
-from awacs import cloudformation, logs, s3, sns, sqs, sts
+from awacs import acm, cloudformation, logs, route53, s3, sns, sqs, sts
 from awacs.aws import Allow, Deny, PolicyDocument, Principal, Statement as _Statement
 from troposphere import (
     AccountId,
@@ -505,13 +505,55 @@ def create_template():
                             )
                         ],
                     ),
-                )
-            ],
-            # TODO scope down
-            ManagedPolicyArns=[
-                "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
-                "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
-                "arn:aws:iam::aws:policy/AWSCertificateManagerReadOnly",
+                ),
+                PolicyProperty(
+                    PolicyName="CertificateValidatorPermissions",
+                    PolicyDocument=PolicyDocument(
+                        Version="2012-10-17",
+                        Statement=[
+                            Statement(
+                                Effect=Allow,
+                                Action=[
+                                    route53.ChangeResourceRecordSets,
+                                ],
+                                Resource=[
+                                    Join(
+                                        ":",
+                                        [
+                                            "arn",
+                                            Partition,
+                                            "route53",
+                                            "",
+                                            "",
+                                            Join(
+                                                "/", ["hostedzone", Ref(hosted_zone_id)]
+                                            ),
+                                        ],
+                                    ),
+                                ],
+                            ),
+                            Statement(
+                                Effect=Allow,
+                                Action=[
+                                    acm.DescribeCertificate,
+                                ],
+                                Resource=[
+                                    Join(
+                                        ":",
+                                        [
+                                            "arn",
+                                            Partition,
+                                            "acm",
+                                            Region,
+                                            AccountId,
+                                            "certificate/*",
+                                        ],
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ),
             ],
             Condition=should_create_certificate,
         )
@@ -551,6 +593,27 @@ def create_template():
         )
     )
 
+    certificate_validator_role_policy = template.add_resource(
+        PolicyType(
+            "CertificateValidatorRoleLogWritePolicy",
+            PolicyName="write-logs",
+            PolicyDocument=PolicyDocument(
+                Version="2012-10-17",
+                Statement=[
+                    Statement(
+                        Effect=Allow,
+                        Action=[logs.CreateLogStream, logs.PutLogEvents],
+                        Resource=[
+                            GetAtt(certificate_validator_log_group, "Arn"),
+                        ],
+                    ),
+                ],
+            ),
+            Roles=[Ref(certificate_validator_role)],
+            Condition=should_create_certificate,
+        )
+    )
+
     certificate_validator_rule = template.add_resource(
         Rule(
             "CertificateValidatorRule",
@@ -573,7 +636,10 @@ def create_template():
                     Arn=GetAtt(certificate_validator_function, "Arn"),
                 )
             ],
-            DependsOn=[certificate_validator_log_group],
+            DependsOn=[
+                certificate_validator_log_group,
+                certificate_validator_role_policy,
+            ],
             Condition=should_create_certificate,
         )
     )
