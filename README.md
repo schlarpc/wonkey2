@@ -30,6 +30,8 @@ Some rough numbers based on current AWS pricing:
 * Lambda@Edge runtime - $0.0000000375075 / request
 * S3 GET requests - $0.000004 / request
 * S3 storage - $0.023 / GiB / month
+  * $0.0125 / GiB / month after 30 days of inactivity on files larger than 128KiB
+* S3 tiering management - $0.0000025 / file / month larger than 128KiB
 
 Additional fixed monthly charges apply for Route 53 hosted zones if you choose to use one;
 this template integrates with Route 53 but does not create any hosted zones.
