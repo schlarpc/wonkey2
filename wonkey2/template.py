@@ -282,7 +282,7 @@ def create_template():
             "PythonRuntimeVersion",
             Description="Lambda runtime, must be compatible with Lambda@Edge; see https://amzn.to/3aPd9Hh for details.",
             Type="String",
-            Default="python3.8",
+            Default="python3.9",
         )
     )
 
