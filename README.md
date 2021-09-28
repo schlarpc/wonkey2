@@ -2,7 +2,7 @@
 
 ## What is it?
 
-Personal file server hosted on AWS, specifically designed to interoperate with ShareX.
+Personal image host and file server on AWS, specifically designed to interoperate with ShareX.
 
 ## Features
 
