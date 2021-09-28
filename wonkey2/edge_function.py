@@ -230,6 +230,7 @@ def handle_origin_request_put(event: dict) -> dict:
     request["headers"].update(
         as_headers(
             {
+                "x-amz-storage-class": "INTELLIGENT_TIERING",
                 "x-amz-acl": "bucket-owner-full-control",
                 "x-amz-meta-filename": b64encode(
                     urllib.parse.unquote(event["request"]["uri"][1:])

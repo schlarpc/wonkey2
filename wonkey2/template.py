@@ -77,6 +77,7 @@ from troposphere.s3 import (
     BucketPolicy,
     LifecycleConfiguration,
     LifecycleRule,
+    LifecycleRuleTransition,
     OwnershipControls,
     OwnershipControlsRule,
     PublicAccessBlockConfiguration,
@@ -396,17 +397,26 @@ def create_template():
     bucket = template.add_resource(
         Bucket(
             "ContentBucket",
-            LifecycleConfiguration=If(
-                content_retention_defined,
-                LifecycleConfiguration(
-                    Rules=[
+            LifecycleConfiguration=LifecycleConfiguration(
+                Rules=[
+                    LifecycleRule(
+                        Transitions=[
+                            LifecycleRuleTransition(
+                                StorageClass="INTELLIGENT_TIERING",
+                                TransitionInDays=1,
+                            ),
+                        ],
+                        Status="Enabled",
+                    ),
+                    If(
+                        content_retention_defined,
                         LifecycleRule(
                             ExpirationInDays=Ref(content_retention_days),
                             Status="Enabled",
                         ),
-                    ]
-                ),
-                NoValue,
+                        NoValue,
+                    ),
+                ],
             ),
             BucketEncryption=BucketEncryption(
                 ServerSideEncryptionConfiguration=[
