@@ -15,6 +15,7 @@ Personal image host and file server on AWS, specifically designed to interoperat
 * Supports custom domain names with automatic certificate issuance and Route 53 DNS configuration
 * Personalize your server with a custom redirect on the server index
 * Custom ShareX destination configuration available at `/sharex.json`
+* Custom upload shell script available at `/upload.sh`
 * RFC 6266 HTTP header support for preserving original filenames
 * HTTP byte range header support for efficient video streaming
 * Flexible URLs; you can append arbitrary file extensions or paths to uploaded URLs

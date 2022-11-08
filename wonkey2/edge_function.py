@@ -4,6 +4,8 @@ import hashlib
 import json
 import re
 import secrets
+import shlex
+import textwrap
 import urllib.parse
 from typing import Optional, Dict, Union, List
 
@@ -74,6 +76,28 @@ BUILT_IN_RESPONSES = {
         "headers": as_headers(
             {
                 "content-type": "application/json",
+            }
+        ),
+    },
+    "/upload.sh": lambda event: {
+        "status": "200",
+        "body": textwrap.dedent(
+            f"""\
+            #!/usr/bin/env bash
+            set -euo pipefail
+            FILE="${{1:?Missing file argument}}"
+            HOST={shlex.quote(get_psuedo_env_var(event, "domain-name") or event["config"]["distributionDomainName"])}
+            read -rsp $'Upload password?\\n' PASSWORD
+            FILENAME="$(basename "$1")"
+            CONTENT_TYPE="$(file -ib "$1")"
+            RESPONSE="$(curl "https://$HOST/$FILENAME" -sf -T "$FILE" -H "content-type: $CONTENT_TYPE" -H "x-wonkey-password: $PASSWORD")"
+            URL="$(echo "$RESPONSE" | jq -r '"https://'"$HOST"'/" + .key')"
+            echo "$URL"
+            """
+        ),
+        "headers": as_headers(
+            {
+                "content-type": "text/x-shellscript; charset=utf-8",
             }
         ),
     },
