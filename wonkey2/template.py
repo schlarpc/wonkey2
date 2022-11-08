@@ -69,7 +69,7 @@ from troposphere.cloudfront import (
     ViewerCertificate,
 )
 from troposphere.events import Rule, Target
-from troposphere.iam import PolicyProperty, PolicyType, Role
+from troposphere.iam import Policy, PolicyType, Role
 from troposphere.logs import LogGroup
 from troposphere.route53 import AliasTarget, RecordSet, RecordSetGroup
 from troposphere.s3 import (
@@ -558,7 +558,7 @@ def create_template(*, allow_debug_logging: bool = True):
                 ],
             ),
             Policies=[
-                PolicyProperty(
+                Policy(
                     PolicyName="DLQPolicy",
                     PolicyDocument=PolicyDocument(
                         Version="2012-10-17",
@@ -571,7 +571,7 @@ def create_template(*, allow_debug_logging: bool = True):
                         ],
                     ),
                 ),
-                PolicyProperty(
+                Policy(
                     PolicyName="CertificateValidatorPermissions",
                     PolicyDocument=PolicyDocument(
                         Version="2012-10-17",
@@ -866,7 +866,7 @@ def create_template(*, allow_debug_logging: bool = True):
                     ],
                 ),
                 Policies=[
-                    PolicyProperty(
+                    Policy(
                         PolicyName="create-stackset-instances",
                         PolicyDocument=PolicyDocument(
                             Version="2012-10-17",
