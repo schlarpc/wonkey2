@@ -41,6 +41,11 @@ def main():
     except sar.exceptions.ConflictException:
         print('Version already exists')
 
+    sar.update_application(
+        ApplicationId=application_id,
+        **application_details,
+    )
+
     sar.put_application_policy(
         ApplicationId=application_id,
         Statements=[
