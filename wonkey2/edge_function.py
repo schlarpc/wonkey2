@@ -90,7 +90,7 @@ BUILT_IN_RESPONSES = {
             read -rsp $'Upload password?\\n' PASSWORD
             FILENAME="$(basename "$1")"
             CONTENT_TYPE="$(file -ib "$1")"
-            RESPONSE="$(curl "https://$HOST/$FILENAME" -sf -T "$FILE" -H "content-type: $CONTENT_TYPE" -H "x-wonkey-password: $PASSWORD")"
+            RESPONSE="$(curl "https://$HOST/$(echo -n "$FILENAME" | jq -sRr @uri)" -sf -T "$FILE" -H "content-type: $CONTENT_TYPE" -H "x-wonkey-password: $PASSWORD")"
             URL="$(echo "$RESPONSE" | jq -r '"https://'"$HOST"'/" + .key')"
             echo "$URL"
             """
